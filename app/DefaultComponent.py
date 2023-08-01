@@ -15,7 +15,7 @@ class DefaultComponent(QRComponent):
             link = 'https://www.onlinekhabar.com/'
             proxy = 'http://hoituser:Welcome%40123@10.13.0.245:8080'
             self.logger.info("Logging in...")
-            self.selenium.open_available_browser()
+            self.selenium.open_available_browser(proxy=proxy)
             self.selenium.go_to(link)
             logger.info('=============  Source Page ===========')
             logger.info(self.browser.selenium.page_source)
