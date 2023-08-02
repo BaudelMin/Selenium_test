@@ -2,6 +2,7 @@ from qrlib.QRComponent import QRComponent
 from RPA.Browser.Selenium import Selenium
 from seleniumwire import webdriver
 from robot.libraries.BuiltIn import BuiltIn
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
 
 import time
 
@@ -15,54 +16,31 @@ class DefaultComponent(QRComponent):
     def login(self):
         logger = self.run_item.logger
         try:
-            
-            proxy_host = "10.13.0.245"
+            proxy_address = "10.13.0.245"
             proxy_port = "8080"
             proxy_username = "hoituser"
             proxy_password = "Welcome@123"
 
-            # Proxy URL with authentication
-            proxy_url = f"http://{proxy_username}:{proxy_password}@{proxy_host}:{proxy_port}"
 
-            # Chrome WebDriver options with proxy settings
-            
-            # http://hoituser:Welcome%40123@10.13.0.245:8080
-            options = {
-                'proxy': {
-                    'http': proxy_url,
-                    'https': proxy_url,
-                    'no_proxy': 'localhost,127.0.0.1'  # Optional: exclude localhost from the proxy
-                }
-            }
-
-            # Create the WebDriver instance with the desired options
-            driver = webdriver.Chrome(seleniumwire_options=options)
-
-            # Now you can use the driver to navigate to a website through the proxy
-            driver.get("https://www.onlinekhabar.com/")
-            
-            logger.info(driver.page_source)
-            
-            BuiltIn().log_to_console(driver.page_source)
-            
-            time.sleep(10)
-            # Add your scraping or testing code here
-
-            # Close the WebDriver
-            driver.quit()
+            firefox_options = FirefoxOptions()
+            firefox_options.set_preference('network.proxy.type', 1)
+            firefox_options.set_preference('network.proxy.http', proxy_address)
+            firefox_options.set_preference('network.proxy.http_port', proxy_port)
+            firefox_options.set_preference('network.proxy.socks_username', proxy_username)
+            firefox_options.set_preference('network.proxy.socks_password', proxy_password)
 
 
 
 
 
             
-            # link = 'https://www.onlinekhabar.com/'
-            # proxy = 'http://hoituser:Welcome%40123@10.13.0.245:8080'
-            # self.logger.info("Logging in...")
-            # self.selenium.open_available_browser(proxy=proxy)
-            # self.selenium.go_to(link)
-            # logger.info('=============  Source Page ===========')
-            # logger.info(self.browser.selenium.page_source)
+            link = 'https://www.onlinekhabar.com/'
+            proxy = 'http://hoituser:Welcome%40123@10.13.0.245:8080'
+            self.logger.info("Logging in...")
+            self.selenium.open_available_browser(headless=True, maximized=True, options=firefox_options, browser_selection='firefox')
+            self.selenium.go_to(link)
+            BuiltIn().log_to_console('=============  Source Page ===========')
+            BuiltIn().log_to_console(self.selenium.driver.page_source)
             # self.selenium.wait_until_element_is_visible('wait_until_element_is_visible', timeout=30)
         except Exception as e:
             self.run_item.logger.error("Failed to login")
